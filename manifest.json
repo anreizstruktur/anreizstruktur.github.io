@@ -1,0 +1,12 @@
+{
+  "gcm_sender_id": "YOUR_FCM_ID",
+
+ // Required
+  "manifest_version": 2,
+  "name": "My Extension",
+  "version": "versionString",
+
+  // Recommended
+  "default_locale": "en",
+  "description": "A plain text description"
+  }
