@@ -1,17 +1,80 @@
-<html> 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
-<head> 
-<title> favorites / bookmark title goes here </title>
-<script type="text/javascript" src="https://qsphere.de:3000/sdk/d360.sdk.js?id=58243aee7e8a9b2571a5076b" async></script>
 
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript">
+        var D360 = [];
+        var D360Options = {
+            requestPushOnLoad: false,
+            appId: '174',
+            userId: null,
+            apiSecret: 'b7e288ffee3ea7ea23f69aaf93605a4d27f39e339d88e249eba264e10e2ce49a',
+        }
+    </script>
+    <script type="text/javascript" src="https://anreizstruktur.github.io/sdk.js" async></script>
+    <link rel="manifest" href="/manifest.json">
 </head>
+<body>
+    <p>State: <strong id="state"></strong></p>
+    <p>External User Id: <input id="userId"><input id="userIdSave" type="button" value="Save"/> </p>
+    <input type="button" id="requestPush" value="Request push" />
+    <input type="button" id="removePush" value="Unsubscribe" />
 
-<body bgcolor="white" text="blue">
+<script type="text/javascript">
+    document.getElementById('userId').value =window.localStorage.getItem('userId');
+    document.getElementById('userIdSave').onclick = function() {
+        window.localStorage.setItem('userId', document.getElementById('userId').value);
+        D360.push('updateExternalData', {userId: document.getElementById('userId').value});
+    };
 
-<h1> My first page </h1>
 
-This is my first web page and I can say anything I want in here - I do that by putting text or images in the body section - where I'm typing right now :) 
+    var status = 'offline';
+    function updateStatus(in_status, bodyClass) {
+        status = in_status;
+        document.getElementById('state').innerHTML = status;
+        var classes = document.body.className = bodyClass;
+    }
+    function getWebPushStatus() {
+        if(!window.D360PushState) {return ;}
+        if(!window.D360PushState.getActiveSubscription()) {
+            return updateStatus('supported, not subscribed', 'supported');
+        }
+        if(D360PushState.getActiveSubscription()) {
+            return updateStatus('active subscription', 'subscribed');
+        }
+    }
 
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('requestPush').onclick = function() {
+            D360.push(["requestPushNotification"]);
+            getWebPushStatus();
+        };
+        document.getElementById('removePush').onclick = function() {
+            D360.push(["unregister"]);
+        };
+    });
+    setInterval(function() {
+        getWebPushStatus()
+    },1000);
+    getWebPushStatus();
+</script>
+<style type="text/css">
+    #requestPush, #removePush {
+        display: none;
+    }
+
+    .supported #requestPush {
+        display: block;
+    }
+    .subscribed #removePush {
+        display: block;
+    }
+</style>
 </body>
-
 </html>
